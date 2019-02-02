@@ -43,6 +43,7 @@ public class create_event extends Fragment {
     EditText editText ;
     EditText name1;
     EditText amount1;
+    EditText bio1;
     Button b;
     public create_event() {
         // Required empty public constructor
@@ -58,6 +59,7 @@ public class create_event extends Fragment {
             name1=v.findViewById(R.id.name);
             amount1=v.findViewById(R.id.amount);
             editText=v.findViewById(R.id.date);
+            bio1=v.findViewById(R.id.bio);
             b=v.findViewById(R.id.button);
         myCalendar = Calendar.getInstance();
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -94,9 +96,14 @@ public class create_event extends Fragment {
 
                     final String name = name1.getText().toString();
 
-
+                    final String bio=bio1.getText().toString();
                     final String start_date= new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                final String end_date=editText.getText().toString();
+                    String myFormat = "yy/MM/dd"; //In which you need put here
+                    SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+                    editText.setText(sdf.format(myCalendar.getTime()));
+
+                    final String end_date=editText.getText().toString();
                 final String amount=amount1.getText().toString();
                     Log.i("check","inside onclick3");
 
@@ -104,7 +111,7 @@ public class create_event extends Fragment {
                 Toast.makeText(getContext(),start_date+"",Toast.LENGTH_LONG).show();
 
                     AsyncLogin login= new AsyncLogin();
-                    login.execute(name,start_date,end_date,amount,"abcd1234");
+                    login.execute(name,start_date,end_date,amount,"abcd1234",bio);
 //                new create_event.AsyncLogin().execute(name,start_date,end_date,amount,"aa");
                 }
                 catch(Exception e){
@@ -171,7 +178,7 @@ public class create_event extends Fragment {
                         .appendQueryParameter("start_date",params[1])
                         .appendQueryParameter("end_date", params[2])
                         .appendQueryParameter("amount", params[3]).
-                        appendQueryParameter("org_id",params[4]);
+                        appendQueryParameter("org_id",params[4]).appendQueryParameter("bio",params[5]);
                 String query = builder.build().getEncodedQuery();
 
 
