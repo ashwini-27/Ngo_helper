@@ -29,6 +29,8 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static android.icu.text.DisplayContext.LENGTH_SHORT;
 
@@ -37,35 +39,55 @@ import static android.icu.text.DisplayContext.LENGTH_SHORT;
 
 public class MainActivity extends AppCompatActivity {
 
-    // CONNECTION_TIMEOUT and READ_TIMEOUT are in milliseconds
     public static final int CONNECTION_TIMEOUT=10000;
     public static final int READ_TIMEOUT=15000;
-    private EditText etEmail;
-    private EditText etPassword;
-    private EditText etNumber;
-
+    private Pattern pattern;
+    private Matcher matcher;
+    private static final String EMAIL_PATTERN =
+            "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    private static final String MOB_NO="^[7-9][0-9]{9}$";
+    private static  final String website_pattern="^(http:\\/\\/|https:\\/\\/)?(www.)?([a-zA-Z0-9]+).[a-zA-Z0-9]*.[a-z]{3}.?([a-z]+)?$";
+    private EditText mob_no1;
+    private EditText email1;
+    private EditText reg_id1;
+    private EditText vision1;
+    private EditText website1;
+    private EditText bio1;
+    private EditText name1;
+    private EditText password1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         // Get Reference to variables
-        etEmail = (EditText) findViewById(R.id.email);
-        etPassword = (EditText) findViewById(R.id.password);
-        etNumber = (EditText) findViewById(R.id.number);
-
+        mob_no1 = (EditText) findViewById(R.id.mob_no);
+        email1 = (EditText) findViewById(R.id.email);
+        reg_id1 = (EditText) findViewById(R.id.reg_id);
+        vision1= (EditText) findViewById(R.id.vision);
+        website1= (EditText) findViewById(R.id.website);
+        bio1= (EditText) findViewById(R.id.bio);
+        name1= (EditText) findViewById(R.id.name);
+        password1=(EditText)findViewById(R.id.password);
     }
 
     // Triggers when LOGIN Button clicked
     public void checkLogin(View arg0) {
 
         // Get text from email and passord field
-        final String email = etEmail.getText().toString();
-        final String password = etPassword.getText().toString();
-        final String number= etNumber.getText().toString();
-
-        // Initialize  AsyncLogin() class with email and password
-        new AsyncLogin().execute(email,password,number);
+        final String mob_no  = mob_no1.getText().toString();
+        final String email  = email1.getText().toString();
+        final String reg_id = reg_id1.getText().toString();
+        final String vision = vision1.getText().toString();
+        final String website = website1.getText().toString();
+        final String bio = bio1.getText().toString();
+        final String name=name1.getText().toString();
+        final String password=password1.getText().toString();
+        //validation call
+      int k= check(mob_no,email,reg_id,vision,website,bio,name,password);
+      if(k==1)
+        new AsyncLogin().execute(mob_no,email,reg_id,vision,website,bio,name,password);
 
     }
 
@@ -108,13 +130,30 @@ public class MainActivity extends AppCompatActivity {
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
 
+
+//Toast.makeText(MainActivity.this,""+params[0],Toast.LENGTH_LONG).show();
                 // Append parameters to URL
                 Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("user", params[0])
-                        .appendQueryParameter("phone", params[1])
-                        .appendQueryParameter("number1", params[2]);
-                String query = builder.build().getEncodedQuery();
+                        .appendQueryParameter("mob_no", params[0])
+                        .appendQueryParameter("email", params[1])
+                        .appendQueryParameter("reg_id", params[2])
+                        .appendQueryParameter("vision", params[3])
+                        .appendQueryParameter("website", params[4])
+                        .appendQueryParameter("bio", params[5])
+                        .appendQueryParameter("name", params[6])
+                        .appendQueryParameter("password", params[7])
+                        .appendQueryParameter("limit_project_no",getString(R.string.amt ))
+                        .appendQueryParameter("limit_project_amt", getString(R.string.proj ));
+                String query="";
+                try {
 
+                   query = builder.build().getEncodedQuery();
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(MainActivity.this,""+e,Toast.LENGTH_LONG).show();
+                }
+               // Toast.makeText(MainActivity.this,""+query,Toast.LENGTH_LONG).show();
                 // Open connection for sending data
                 OutputStream os = conn.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(
@@ -173,14 +212,14 @@ public class MainActivity extends AppCompatActivity {
 
             pdLoading.dismiss();
             Toast.makeText(MainActivity.this,""+result,Toast.LENGTH_LONG).show();
+            ////already exist means go to signin
             if(result.equalsIgnoreCase("true"))
             {
                 /* Here launching another activity when login successful. If you persist login state
                 use sharedPreferences of Android. and logout button to clear sharedPreferences.
                  */
 
-                Intent intent = new Intent(MainActivity.this,sucess.class);
-                startActivity(intent);
+                Toast.makeText(MainActivity.this,"success",Toast.LENGTH_LONG).show();
                 MainActivity.this.finish();
 
             }else if (result.equalsIgnoreCase("false")){
@@ -190,12 +229,78 @@ public class MainActivity extends AppCompatActivity {
 
             } else if (result.equalsIgnoreCase("exception") || result.equalsIgnoreCase("unsuccessful")) {
 
-                Toast.makeText(MainActivity.this, "OOPs! Something went wrong. Connection Problem.", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, ""+result, Toast.LENGTH_LONG).show();
 
             }
         }
 
     }
-}
-
-
+    public int  check(String mob_no,String email,String reg_id,String vision,String website,String bio,String name,String password)
+    {
+        if(mob_no=="")
+        {
+            mob_no1.setError("required");
+            return 0;
+        }
+        else if(email=="")
+        {
+            email1.setError("required");
+            return 0;
+        }
+        else if(reg_id=="")
+        {
+            reg_id1.setError("required");
+            return 0;
+        }
+        else if(vision=="")
+        {
+            vision1.setError("required");
+            return 0;
+        }
+        else if(website=="")
+        {
+            website1.setError("required");
+            return 0;
+        }
+        else if(bio=="")
+        {
+            bio1.setError("required");
+            return 0;
+        }
+        else if(name=="")
+        {
+            name1.setError("required");
+            return 0;
+        }
+        else if(password=="")
+        {
+            password1.setError("required");
+            return 0;
+        }
+        else
+        {
+            if(!validate_mob(mob_no))
+            {
+                mob_no1.setError("Enter correct no");
+                return 0;
+            }
+            else if(!validate_email(email)) {
+                email1.setError("Enter valid Email Address");
+                return 0;
+            }
+           /* else if(!validate_website(website)){
+                website1.setError("Enter proper website URL");
+            }*/
+        }
+        return 1;
+    }
+    public boolean validate_email(final String hex) {
+        pattern=Pattern.compile(EMAIL_PATTERN);
+        matcher = pattern.matcher(hex);
+        return matcher.matches();
+    }
+    public boolean validate_mob(final String mm){
+        pattern= Pattern.compile(MOB_NO);
+        matcher=pattern.matcher(mm);
+        return  matcher.matches();
+    }}
