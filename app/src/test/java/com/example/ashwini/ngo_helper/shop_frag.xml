@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/first_Level_AttendenceView1"
+            android:layout_width="407dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:scrollbars="vertical"
+            android:paddingBottom="5dp"
+            android:textAlignment="center" />
+
+</android.support.constraint.ConstraintLayout>
